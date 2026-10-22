@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Up-to-date team docs for AI agents · Jaeneung Sim</title>
+<meta name="description" content="A Confluence space is synced read-only every 10 minutes into a search index, and AI coding agents use it through one MCP tool. Every result carries the page link, version and last-edited time, and a warning appears when the sync stops.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Up-to-date team docs for AI agents">
+<meta property="og:description" content="A Confluence space is synced read-only every 10 minutes into a search index, and AI coding agents use it through one MCP tool. Every result carries the page link, version and last-edited time, and a warning appears when the sync stops.">
+<meta property="og:url" content="https://jaeneungsim.github.io/ai-team-docs/">
+<meta property="og:image" content="https://jaeneungsim.github.io/ai-team-docs/architecture.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jaeneungsim.github.io/ai-team-docs/">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>*{box-sizing:border-box}body{margin:0}
+/* Layout: one reading column, like a GitHub Pages article; the diagram and tables get the full column width. */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --fg:#17202A; --muted:#5A6776; --line:#DCE2E9; --soft:#EEF1F5;
+  --accent:#2457D6; --note:#8A5A00; --note-bg:#FFF7E3;
+  --f-display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --f-body:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141A; --surface:#161D25; --fg:#E5EBF1; --muted:#9AA8B6; --line:#2A3542; --soft:#1C2530;
+  --accent:#7EA2FF; --note:#F0C060; --note-bg:#2A2312; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F141A; --surface:#161D25; --fg:#E5EBF1; --muted:#9AA8B6; --line:#2A3542; --soft:#1C2530;
+  --accent:#7EA2FF; --note:#F0C060; --note-bg:#2A2312; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body)}
+.page{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:32px 64px;display:flex;flex-direction:column;gap:28px}
+.top{display:flex;flex-direction:column;gap:12px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font:600 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.status{font:600 12px/1 var(--f-display);letter-spacing:0;text-transform:none;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--fg);background:var(--surface)}
+h1{margin:0;font:700 clamp(28px,5vw,40px)/1.2 var(--f-display);letter-spacing:-0.025em;text-wrap:balance}
+.lede{margin:0;font-size:18px;line-height:1.75;color:var(--fg);max-width:65ch;word-break:keep-all}
+.stack{display:flex;flex-wrap:wrap;gap:8px}
+.stack span{font:500 12.5px/1 var(--f-mono);padding:7px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 16px;padding-block:12px;border-block:1px solid var(--line);font:500 14px/1.6 var(--f-display)}
+nav.toc a{color:var(--muted);text-decoration:none}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--accent);outline:none;text-decoration:underline}
+article{display:flex;flex-direction:column;gap:14px;font-size:16px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere}
+article h2{margin:28px 0 0;font:700 24px/1.3 var(--f-display);letter-spacing:-0.015em;scroll-margin-top:16px;text-wrap:balance}
+article h3{margin:14px 0 0;font:700 18px/1.4 var(--f-display);text-wrap:balance}
+article p,article ul,article ol{margin:0;max-width:68ch}
+article ul,article ol{padding-left:22px;display:flex;flex-direction:column;gap:6px}
+article li > ul{margin-top:6px}
+article strong{font-weight:700}
+article a{color:var(--accent);text-underline-offset:3px}
+article code{font:500 .88em/1.4 var(--f-mono);background:var(--soft);padding:1px 5px;border-radius:5px}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px;line-height:1.6}
+.table th{font:600 13px/1.4 var(--f-display);text-align:left;color:var(--muted);background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--line)}
+.table td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+.table tr:first-child td{border-top:none}
+figure.diagram{margin:6px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+figure.diagram figcaption{padding:10px 14px;font-size:13.5px;color:var(--muted);background:var(--surface);border-top:1px solid var(--line)}
+.notes{background:var(--note-bg);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.notes h2{margin:0;font:700 15px/1.4 var(--f-display);color:var(--note)}
+.notes ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.65}
+
+article{word-break:normal;overflow-wrap:break-word}
+.lede{word-break:normal}
+footer.site{display:flex;flex-wrap:wrap;gap:8px 18px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer.site a{color:var(--accent)}
+
+.dg{container-type:inline-size;position:relative;width:100%;aspect-ratio:100/103.5;overflow:hidden;
+  background:#FBFBFC;color:#14212E;
+  font-family:'IBM Plex Sans KR','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  letter-spacing:-0.01em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.dg *{box-sizing:border-box;margin:0}
+.dg .a{position:absolute}
+.dg-title{left:6cqw;top:4.4cqw;font-weight:700;font-size:4.7cqw;line-height:1.15;letter-spacing:-0.025em;white-space:nowrap}
+.dg-sub{left:6cqw;top:10.7cqw;font-size:2.25cqw;line-height:1.35;color:#3A4A5B;white-space:nowrap}
+.dg-sub b{color:#14212E;font-weight:700}
+.dg-zone{border-radius:2cqw;border:0.2cqw solid}
+.dg-zone.gh{background:#EAF0F7;border-color:#D3DCE7}
+.dg-zone.aws{background:#F6F2EB;border-color:#E3DBCF}
+.dg-zl{font-size:1.95cqw;font-weight:700;color:#4F5D6D;white-space:nowrap}
+.dg-bx{background:#FFFFFF;border:0.2cqw solid #C9D2DD;border-radius:1.3cqw;padding:1.1cqw 1.3cqw;
+  display:flex;flex-direction:column;gap:0.45cqw;overflow:hidden}
+.dg-bx.ai{background:#EEF3FF;border-color:#9DB6F0}
+.dg-bx.zone-in{background:#FFFFFF}
+.dg-bx.pv{background:#F7F9FC;border:0.22cqw dashed #6B7A8C}
+.dg-bt{display:flex;align-items:center;gap:0.9cqw;font-weight:700;font-size:2.3cqw;line-height:1.2;white-space:nowrap}
+.dg-bt.sm{font-size:2.1cqw}
+.dg-bl{font-size:1.95cqw;line-height:1.3;color:#3A4A5B;white-space:nowrap}
+.dg-bl.ok{color:#1A7F37;font-weight:700}
+.dg-bl .fix{color:#C2410C;font-weight:700}.dg-bl .human{color:#8A5A00;font-weight:700}
+.dg-n{flex:none;width:3cqw;height:3cqw;border-radius:50%;background:#14212E;color:#FFFFFF;display:grid;place-items:center;
+  font-weight:700;font-size:1.75cqw;line-height:1}
+.dg-n.ai{background:#2457D6}
+.dg-panel{background:#FFFFFFAA;border:0.2cqw solid #E3DBCF;border-radius:1.6cqw}
+.dg-pl{font-size:1.8cqw;font-weight:700;color:#6A5B45;white-space:nowrap}
+.dg-sf{background:#FFFFFF;border:0.22cqw solid #9AA8B8;border-radius:1.6cqw}
+.dg-chip{display:flex;align-items:center;gap:1cqw;background:#F3F5F8;border:0.18cqw solid #DCE2EA;border-radius:1cqw;
+  padding:0 1cqw;white-space:nowrap}
+.dg-chip.ai{background:#EEF3FF;border-color:#9DB6F0}
+.dg-chip i{font-style:normal;flex:none;width:2.6cqw;height:2.6cqw;border-radius:50%;background:#FFFFFF;border:0.18cqw solid #9AA8B8;
+  display:grid;place-items:center;font:600 1.45cqw/1 'IBM Plex Mono',ui-monospace,monospace;color:#3A4A5B}
+.dg-chip.ai i{border-color:#2457D6;color:#2457D6}
+.dg-chip b{font-size:2.05cqw;font-weight:700}
+.dg-chip span{font-size:1.8cqw;color:#4F5D6D}
+.dg-chip .mono{font:500 1.75cqw/1 'IBM Plex Mono',ui-monospace,monospace}
+.dg-el{font-size:1.85cqw;font-weight:600;color:#4F5D6D;white-space:nowrap}
+.dg-el.ai{color:#2457D6}
+.dg-foot{left:6cqw;top:114.6cqw;display:flex;flex-direction:column;gap:0.5cqw}
+.dg-foot p{font-size:2.05cqw;line-height:1.35;color:#2C3B4B;white-space:nowrap}
+.dg-foot b{color:#14212E}
+.dg-foot .src{font:500 1.8cqw/1.3 'IBM Plex Mono',ui-monospace,monospace;color:#5A6A7B}
+.dg svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1}
+.dg .dg-el{z-index:2}
+.dg .ln{fill:none;stroke:#6B7A8C;stroke-width:0.32}
+.dg .ln.dash{stroke-dasharray:1 0.8}
+.dg .ln.ai{stroke:#2457D6}
+.dg .hd{fill:#6B7A8C}.dg .hd.ai{fill:#2457D6}
+
+.dg.s2{aspect-ratio:100/117.5}
+.dg.en{font-family:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;letter-spacing:0}
+.dg-zone.ext{background:#EAF0F7;border-color:#D3DCE7}
+.dg-step{background:#F3F5F8;border:0.18cqw solid #DCE2EA;border-radius:1cqw;padding:0.9cqw 1.1cqw;
+  display:flex;flex-direction:column;gap:0.4cqw;overflow:hidden}
+.dg-step.row{flex-direction:row;align-items:center;gap:1.4cqw}
+.dg-step b{display:flex;align-items:center;gap:0.9cqw;font-size:2.05cqw;font-weight:700;line-height:1.2;white-space:nowrap}
+.dg-step>span{font-size:1.8cqw;line-height:1.3;color:#4F5D6D;white-space:nowrap}
+.dg-bl.warn{color:#C2410C;font-weight:700}
+</style>
+</head>
+<body>
+<div class="page">
+ <header class="top">
+  <div class="eyebrow"><span>Write-up · October 2026</span></div>
+  <h1>Up-to-date team docs for AI agents</h1>
+  <p class="lede">A Confluence space is synced read-only every 10 minutes into a search index, and AI coding agents use it through one MCP tool. Every result carries the page link, version and last-edited time, and a warning appears when the sync stops.</p>
+  <div class="stack"><span>AWS serverless</span><span>CDK</span><span>Amazon Bedrock (Titan Text Embeddings V2)</span><span>SQLite FTS5</span><span>MCP</span><span>Confluence Cloud API</span></div>
+ </header>
+ <nav class="toc" aria-label="Contents"><a href="#the-problem">The problem</a><a href="#principles">Principles</a><a href="#architecture">Architecture</a><a href="#why-this-design">Why this design</a><a href="#results">Results</a><a href="#what-the-design-missed">What the design missed</a><a href="#next-steps">Next steps</a><a href="#how-it-was-built">How it was built</a><a href="#code-and-records">Code and records</a></nav>
+ <article><h2 id="the-problem">The problem</h2>
+<p>As AI is used in more parts of software development, it more often needs to know the team's documents too.</p>
+<ul>
+<li><strong>Writing code:</strong> why the team decided things the way it did (decision records), and what to do when something breaks (runbooks)</li>
+<li><strong>Reviewing a pull request:</strong> whether the change follows the team's rules and decision records</li>
+<li><strong>Drafting a Jira ticket:</strong> whether a new requirement conflicts with existing documents</li>
+</ul>
+<p>But this knowledge usually lives in a wiki, not in the repository. So wiki pages get copied into the repository or pasted into prompts. Those copies don't follow the wiki when it changes. The agent works from a stale copy, and nobody knows the copy is stale.</p>
+<h3>Why agents can't simply be handed the wiki</h3>
+<ul>
+<li><strong>Copies go stale.</strong> When someone edits the wiki, the copy doesn't know, and nothing records when it was copied.</li>
+<li><strong>Access is broad.</strong> In some organizations, security or compliance rules keep AI coding agents from connecting to the internal wiki directly. Wiki and collaboration vendors are also adding admin controls that allow or block AI agent access.</li>
+<li><strong>Wiki pages are untrusted data.</strong> A page can contain text people can't see, or instructions aimed at an AI. OWASP notes that it is unclear whether there is a fool-proof way to prevent prompt injection (LLM01:2025).</li>
+<li><strong>Putting everything in the prompt has limits.</strong> Anthropic suggests putting the whole knowledge base in the prompt, with no retrieval, when it is smaller than about 200,000 tokens. But as a wiki grows, so does the token count, and research shows that models can miss information in the middle of long inputs (Liu et al., TACL 2024; Chroma, 2025).</li>
+</ul>
+<p>Claude Code doesn't rely on a prebuilt embedding index. It searches the repository with patterns and text when it needs to find code. Wiki pages live outside the repository, so they need an approved copy and a search tool to find things in it.</p>
+<p>There are managed options, such as the Atlassian Rovo MCP Server (generally available in February 2026) and Amazon Bedrock Managed Knowledge Base (generally available in June 2026, with a Confluence connector). Before adopting a service like that, I built this to understand what structure it takes to give agents up-to-date documents safely. I also wanted to check that the AI answers correctly from the changed documents. When it gives a wrong answer, I wanted to find the step that caused it and fix only that step. The goal was one search tool that writing code, reviewing pull requests and drafting tickets can all share. This time I connected it to Claude Code and tested it there. I also compared it with Managed Knowledge Base on the same questions.</p>
+<h2 id="principles">Principles</h2>
+<ol>
+<li><strong>Read only.</strong> Confluence is read with a token scoped to reading and with code that only sends GET requests. The tool the agent gets is a single read-only search.</li>
+<li><strong>Show sources and freshness.</strong> Every result carries the page link, version, last-edited time and sync time. If the sync stops, a warning goes at the top of the results, and the agent is told to pass it on first.</li>
+<li><strong>Treat wiki pages as data.</strong> Content people can't see is kept out of the index. Sentences that look like instructions to an AI are flagged, not deleted. Every tool result ends with a reminder not to follow page content as instructions.</li>
+<li><strong>Confirm before removing.</strong> Each page missing from the list is checked on its own before it is removed. If more than 20% go missing at once, removal stops until a person checks. When a page is removed, the copies we stored are set to be deleted too.</li>
+<li><strong>Process only what changed.</strong> Only pages with a new version are processed again, and chunks whose text hasn't changed reuse their earlier embeddings.</li>
+<li><strong>Measure each step.</strong> Retrieval, answers, freshness and cost are measured separately, so a wrong answer can be traced to the step where it went wrong.</li>
+</ol>
+<h2 id="architecture">Architecture</h2>
+<figure class="diagram"><div class="dg s2 en" role="img" aria-label="Architecture of the team docs search: EventBridge Scheduler runs the sync Lambda every 10 minutes. The sync Lambda reads Confluence pages with a read-only token, runs sync, safety checks and indexing, and stores versions in DynamoDB and files in S3; Amazon Bedrock makes the embeddings. The search Lambda reads the index and merges keyword and semantic results with RRF. A local MCP server on the developer&#x27;s computer calls the search Lambda and returns the results to Claude Code"><div class="a dg-zone ext" style="left:3.5cqw;top:3.5cqw;width:93cqw;height:13.3cqw"></div><p class="a dg-zl" style="left:5.5cqw;top:4.7cqw">Confluence</p><div class="a dg-bx " style="left:30cqw;top:6.35cqw;width:40cqw;height:7.6cqw"><p class="dg-bt">Team space</p><p class="dg-bl">Each edit makes a new page version</p></div><p class="a dg-el" style="left:51.4cqw;top:17.45cqw">Page list + bodies (GET only)</p><div class="a dg-zone aws" style="left:3.5cqw;top:20.5cqw;width:93cqw;height:67.3cqw"></div><p class="a dg-zl" style="left:5.5cqw;top:84.1cqw">AWS · serverless · CDK</p><div class="a dg-bx " style="left:6cqw;top:23.5cqw;width:28cqw;height:7.6cqw"><p class="dg-bt">EventBridge Scheduler</p><p class="dg-bl">Runs the sync every 10 min</p></div><div class="a dg-bx " style="left:66cqw;top:23.5cqw;width:28cqw;height:7.6cqw"><p class="dg-bt">SSM Parameter Store</p><p class="dg-bl">Read-only token (encrypted)</p></div><div class="a dg-sf" style="left:6cqw;top:34.5cqw;width:88cqw;height:17.6cqw"></div><p class="a dg-bt" style="left:7.6cqw;top:35.6cqw">Sync Lambda</p><div class="a dg-step" style="left:7cqw;top:39.6cqw;width:26cqw;height:10.6cqw"><b><span class="dg-n">1</span>Sync</b><span>Changed pages only</span><span>Deletions confirmed first</span></div><div class="a dg-step" style="left:37cqw;top:39.6cqw;width:26cqw;height:10.6cqw"><b><span class="dg-n">2</span>Safety checks</b><span>Hidden text removed</span><span>AI instructions flagged</span></div><div class="a dg-step" style="left:67cqw;top:39.6cqw;width:26cqw;height:10.6cqw"><b><span class="dg-n">3</span>Indexing</b><span>Chunks by heading</span><span>Keyword index + embeddings</span></div><div class="a dg-bx " style="left:6cqw;top:56cqw;width:28cqw;height:10.4cqw"><p class="dg-bt">DynamoDB</p><p class="dg-bl">Version of each page</p><p class="dg-bl">Last sync time</p></div><div class="a dg-bx " style="left:36cqw;top:56cqw;width:28cqw;height:10.4cqw"><p class="dg-bt">S3</p><p class="dg-bl">Raw pages and chunks</p><p class="dg-bl">Index files (FTS5 + vectors)</p></div><div class="a dg-bx ai" style="left:66cqw;top:56cqw;width:28cqw;height:10.4cqw"><p class="dg-bt">Amazon Bedrock</p><p class="dg-bl">Titan Text Embeddings V2</p><p class="dg-bl">Embeds chunks and queries</p></div><div class="a dg-sf" style="left:6cqw;top:72cqw;width:88cqw;height:10.6cqw"></div><p class="a dg-bt" style="left:7.6cqw;top:73.1cqw">Search Lambda</p><div class="a dg-step row" style="left:7cqw;top:76.9cqw;width:86cqw;height:4.6cqw"><b><span class="dg-n">4</span>Search</b><span>Word matches + meaning matches → one ranking (RRF)</span></div><p class="a dg-el" style="left:39.5cqw;top:88.6cqw">Role that can only call search · no public endpoint</p><div class="a dg-zone ext" style="left:3.5cqw;top:91.5cqw;width:93cqw;height:22.5cqw"></div><p class="a dg-zl" style="left:5.5cqw;top:92.7cqw">Developer's computer</p><div class="a dg-bx " style="left:6cqw;top:96cqw;width:44cqw;height:14.6cqw"><p class="dg-bt"><span class="dg-n">5</span>MCP server (local)</p><p class="dg-bl">One read-only tool</p><p class="dg-bl">Link · version · edit time per result</p><p class="dg-bl warn">Warns when the sync stops</p></div><div class="a dg-bx " style="left:56cqw;top:96cqw;width:38cqw;height:14.6cqw"><p class="dg-bt">Claude Code</p><p class="dg-bl">Searches when it needs team docs</p><p class="dg-bl">Cites the page link and version</p></div><svg viewBox="0 0 100 117.5" preserveAspectRatio="none" aria-hidden="true"><path class="ln " d="M50 13.95 V32.9"/><polygon class="hd " points="49.0,32.9 51.0,32.9 50,34.5"/><path class="ln " d="M20 31.1 V32.9"/><polygon class="hd " points="19.0,32.9 21.0,32.9 20,34.5"/><path class="ln " d="M80 31.1 V32.9"/><polygon class="hd " points="79.0,32.9 81.0,32.9 80,34.5"/><path class="ln " d="M33 44.9 H35.4"/><polygon class="hd " points="35.4,43.9 35.4,45.9 37,44.9"/><path class="ln " d="M63 44.9 H65.4"/><polygon class="hd " points="65.4,43.9 65.4,45.9 67,44.9"/><path class="ln " d="M20 52.1 V54.4"/><polygon class="hd " points="19.0,54.4 21.0,54.4 20,56"/><path class="ln " d="M50 52.1 V54.4"/><polygon class="hd " points="49.0,54.4 51.0,54.4 50,56"/><path class="ln ai" d="M80 51.8 V54.4"/><polygon class="hd ai" points="79.0,54.4 81.0,54.4 80,56"/><polygon class="hd ai" points="79.0,51.8 81.0,51.8 80,50.2"/><path class="ln " d="M20 66.4 V70.4"/><polygon class="hd " points="19.0,70.4 21.0,70.4 20,72"/><path class="ln " d="M50 66.4 V70.4"/><polygon class="hd " points="49.0,70.4 51.0,70.4 50,72"/><path class="ln ai" d="M80 68.0 V70.4"/><polygon class="hd ai" points="79.0,70.4 81.0,70.4 80,72"/><polygon class="hd ai" points="79.0,68.0 81.0,68.0 80,66.4"/><path class="ln " d="M38 84.2 V94.4"/><polygon class="hd " points="37.0,94.4 39.0,94.4 38,96"/><polygon class="hd " points="37.0,84.2 39.0,84.2 38,82.6"/><path class="ln " d="M51.6 103.3 H54.4"/><polygon class="hd " points="54.4,102.3 54.4,104.3 56,103.3"/><polygon class="hd " points="51.6,102.3 51.6,104.3 50,103.3"/></svg></div><figcaption>Architecture. The numbers match the sections below. Arrows show where the docs go; two-headed arrows are calls that come back with an answer.</figcaption></figure>
+<h3>1. Sync</h3>
+<p>EventBridge Scheduler runs the sync Lambda every 10 minutes. The Lambda calls the Confluence Cloud API with a read-scoped token stored in SSM Parameter Store.</p>
+<ul>
+<li>It fetches the space's page list together with the page bodies, compares each page's version number with the one stored in DynamoDB, and processes only the pages that changed. Archived pages are left out of the list from the start.</li>
+<li>Each page missing from the list is looked up again on its own. If it is in the trash, archived, permanently deleted or no longer accessible, it is removed from the index. If it is still live, it stays.</li>
+<li>If more than 20% of the pages go missing in one run, nothing is removed and a warning is recorded. This keeps an API glitch or a permission change from emptying the index all at once.</li>
+<li>A run lock in DynamoDB keeps two runs from overlapping.</li>
+<li>Raw pages and converted text are stored in S3. When a page is removed or replaced by a new version, its old files get a tag, and an S3 lifecycle rule deletes them. The sync function has no permission to delete anything.</li>
+</ul>
+<h3>2. Conversion and safety checks</h3>
+<p>Confluence's storage format (XHTML) is converted to Markdown. The converters for macros such as code blocks, info panels, task lists and decisions are custom-built, with test fixtures for each macro.</p>
+<ul>
+<li>Content people can't see is removed: HTML comments, white or zero-size text, and zero-width characters.</li>
+<li>Sentences that look like instructions to an AI (for example, "ignore previous instructions" or "AI agent:") are kept and flagged in the results. That way a normal page never disappears without anyone noticing.</li>
+</ul>
+<h3>3. Indexing</h3>
+<ul>
+<li>Pages are split into chunks by heading (h1–h3), and each chunk gets a "page title &gt; section title" prefix. Anthropic reported that adding context to each chunk before indexing cut top-20 retrieval failures by 49%. This project does something simpler and adds only the titles.</li>
+<li>Chunks are embedded with Titan Text Embeddings V2 on Amazon Bedrock, in the Sydney Region. A hash of each chunk's text is compared, so unchanged chunks reuse their earlier embeddings.</li>
+<li>The keyword index (SQLite FTS5) and the vector file are bundled into one index and uploaded to S3. Then only the pointer to the current index changes.</li>
+</ul>
+<h3>4. Search</h3>
+<p>The search Lambda keeps a downloaded copy of the index and searches it two ways for each question.</p>
+<ul>
+<li><strong>Keyword search (BM25):</strong> page titles and section titles get extra weight. It covers exact names such as error codes and ticket numbers.</li>
+<li><strong>Semantic search:</strong> the question is embedded and compared with the chunks. It covers questions worded differently from the documents.</li>
+<li>The two result lists are merged with RRF (Cormack et al., SIGIR 2009). At most two chunks come from any one page, and five chunks are returned.</li>
+<li>There is no separate vector database. With a few hundred chunks, comparing all of them inside the Lambda is enough, and there is no fixed cost.</li>
+</ul>
+<h3>5. MCP tool</h3>
+<p>A local MCP server gives Claude Code one read-only tool, <code>search_team_docs</code>.</p>
+<ul>
+<li>The MCP server runs with an IAM role that can only invoke the search Lambda. There is no public endpoint, and the agent side never holds the Confluence token.</li>
+<li>Every result carries the page link, version, last-edited time and sync time. The last line shows when the index was last synced.</li>
+<li>A warning appears at the top if the last sync was more than 30 minutes ago, the last run failed, removals were held back, or the token expires within two weeks.</li>
+</ul>
+<h2 id="why-this-design">Why this design</h2>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Not chosen</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fetch the page list every 10 minutes and compare versions</td>
+<td>Webhooks, CQL search</td>
+<td>Webhooks need an app or an automation rule on the Confluence side. CQL is only in the older API and works to the minute. The page list call returns every page's version</td>
+</tr>
+<tr>
+<td>A read-scoped token and GET-only code</td>
+<td>The full permissions of a person's account</td>
+<td>Limits what the sync can do to reading</td>
+</tr>
+<tr>
+<td>Hybrid search inside Lambda</td>
+<td>A vector database</td>
+<td>With a few hundred chunks, comparing them all is the simplest option and has no fixed cost. Every step can be explained and tested</td>
+</tr>
+<tr>
+<td>Titan Text Embeddings V2</td>
+<td>Other embedding models</td>
+<td>Runs within the Sydney Region, accepts inputs of up to 8,192 tokens, and is cheap</td>
+</tr>
+<tr>
+<td>No reranker</td>
+<td>A reranking model</td>
+<td>No Bedrock reranking model can be called on its own in Sydney. Using another Region would send the documents outside Australia</td>
+</tr>
+<tr>
+<td>Direct Lambda invocation, no public endpoint</td>
+<td>API Gateway</td>
+<td>A single-user setup doesn't need an endpoint to protect</td>
+</tr>
+<tr>
+<td>Flag instructions only</td>
+<td>Delete instructions</td>
+<td>Keeps a normal page from silently disappearing</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="results">Results</h2>
+<p>I ran it on 30 Confluence pages for a fictional team that builds an inventory app: decision records, runbooks, team rules and reference pages. Claude wrote all of the documents and evaluation questions.</p>
+<p>When the same author writes both the documents and the questions, they tend to share words, which favors keyword search. So I measured what share of each question's words also appear in its answer page. The first 26 questions averaged 57%, and five questions written to avoid the page's words averaged 29%. With 31 questions, small differences are within the margin of error (95% interval ±11–16 points), so read the results as trends.</p>
+<h3>Retrieval accuracy</h3>
+<p>I looked at the top 5 results for the 31 questions that the documents answer. hit@5 is the share of questions whose answer page is in the top 5. MRR is the mean of the reciprocal rank of the first right result.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>All (hit@5 / MRR)</th>
+<th>5 low-overlap questions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keyword (BM25)</td>
+<td>84% / 0.68</td>
+<td>60% / 0.50</td>
+</tr>
+<tr>
+<td>Semantic (Titan)</td>
+<td>100% / 0.86</td>
+<td>100% / 0.73</td>
+</tr>
+<tr>
+<td>Hybrid (RRF)</td>
+<td>100% / 0.89</td>
+<td>100% / 0.74</td>
+</tr>
+<tr>
+<td>Hybrid, no title prefix</td>
+<td>97% / 0.82</td>
+<td>80% / 0.70</td>
+</tr>
+<tr>
+<td>Bedrock Managed Knowledge Base (defaults)</td>
+<td>97% / 0.87</td>
+<td>100% / 0.80</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Keyword search alone missed questions asked in different words. On the low-overlap questions, it missed 2 of 5.</li>
+<li>Adding the "page &gt; section" prefix raised MRR from 0.82 to 0.89.</li>
+<li>Managed Knowledge Base gave almost the same results with its defaults. The difference is one question.</li>
+</ul>
+<h3>Answer accuracy</h3>
+<p>The same model (Claude Haiku 4.5 on Amazon Bedrock, through the Australian inference profile) answered 34 questions, including 3 that the documents don't answer. Code checked whether each answer contained the facts it had to include (commands, numbers, names). I also read every answer and corrected the one case the code had scored wrong.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Prompt</th>
+<th>Top 5 search results</th>
+<th>All documents</th>
+<th>All documents + prompt cache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First</td>
+<td>82%</td>
+<td>68%</td>
+<td>68%</td>
+</tr>
+<tr>
+<td>After adding one sentence</td>
+<td>85%</td>
+<td>(not run)</td>
+<td>82%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>The most common error was answering "not in the docs" when the answer was right there, especially when the model got all the documents. One sentence added to the prompt, "the docs usually contain the answer even when they use other words than the question", raised the all-documents method from 68% to 82%. One sentence in the prompt mattered more than the choice of method.</li>
+<li>At this scale (30 pages, about 13,000 input tokens per question), giving the model all the documents with caching was about as accurate as search (82% vs 85%). For the 34 questions, search cost $0.08 and all documents with caching $0.09–0.13. Search used about 1,600 input tokens per question, one eighth as many.</li>
+<li>So at this scale, the reason to use search is not accuracy. It is freshness, showing sources, and what happens as the wiki grows.</li>
+</ul>
+<h3>Freshness</h3>
+<p>This is how long it took, after a page was edited in Confluence, for the search tool to return the new version. Before each edit, the script waited a random 0–10 minutes, so edits landed at random points in the sync cycle.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>10 edits at random times</th>
+<th>Median</th>
+<th>Max</th>
+<th>Min</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Until searchable</td>
+<td>6 min 49 s</td>
+<td>9 min 32 s</td>
+<td>1 min 18 s</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Nearly all of that time is the wait for the next sync. Once a sync ran, the change was searchable within 3–19 seconds. An edit made right after a sync took up to 10 min 5 s. The 10-minute cycle sets the upper bound.</li>
+<li>These 10 edits happened to fall early in the cycle, so the results are longer than the average for edits spread evenly across it (about 5 minutes, calculated).</li>
+</ul>
+<h3>Comparison: when a runbook changes</h3>
+<p>In the runbook "Roll back a bad deploy on dev", I replaced the fast path (re-running an earlier deploy with <code>gh run rerun</code>) with "don't re-run old deploys; use a revert PR only". Then I asked three agents the same question: "dev broke right after something got merged. What is the quickest way to get the previous working version running again?" The model (Claude Haiku 4.5) and the prompt were the same; only the documents differed.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Documents the agent got</th>
+<th>Before the change</th>
+<th>After the change</th>
+<th>After syncing the KB by hand</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A copy kept in the repository</td>
+<td><code>gh run rerun</code></td>
+<td><code>gh run rerun</code> (stale)</td>
+<td><code>gh run rerun</code> (stale)</td>
+</tr>
+<tr>
+<td>Managed Knowledge Base</td>
+<td><code>gh run rerun</code></td>
+<td><code>gh run rerun</code> (stale)</td>
+<td>New rule</td>
+</tr>
+<tr>
+<td>This search tool</td>
+<td><code>gh run rerun</code></td>
+<td>New rule, with "version 2" and the edit time</td>
+<td>New rule, with version and edit time</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>The agent using this search tool gave the new rule, with its version, 7 min 21 s after the edit.</li>
+<li>Managed Knowledge Base kept giving the old command until its sync was run by hand. Its scheduled sync runs at most once a day. The manual sync took 151 seconds.</li>
+<li>The copy keeps giving the old command until someone copies the page again.</li>
+<li>After the test, the page was put back the way it was.</li>
+</ul>
+<h3>When the sync stops</h3>
+<p>I turned the sync schedule off for 30 minutes. Once 30 minutes had passed since the last sync, the search tool put a warning at the top of its results: "WARNING: the last successful sync was 30 min ago (2026-10-20 09:52 UTC). Results may be out of date."</p>
+<p>But the agent (Claude Haiku 4.5) didn't mention the warning in its answer, even when the tool description said that a warning at the top means the results may be out of date. When the instruction was changed to "When a result starts with WARNING, start your answer by telling the user what the warning says", the agent put the warning in the first line of its answer (tested once). Producing a warning was not enough; the agent had to be told explicitly to pass it on.</p>
+<h3>Comparison with Managed Knowledge Base</h3>
+<ul>
+<li><strong>Accuracy:</strong> almost the same, as the table above shows. I created it with the default settings, and it took about five minutes from creation to the end of the first sync.</li>
+<li><strong>Token:</strong> the Knowledge Base's Confluence connector takes only the site URL. Atlassian accepts scoped tokens only at its gateway URL, so the read-scoped token was rejected at the site URL (401). Connecting with basic authentication therefore needed a token with all of the account's permissions. I didn't test the OAuth connection.</li>
+<li><strong>What results carry:</strong> the title, page URL and last-modified time. There is no version number, no sync time and no warning that the index has stopped updating. Every chunk I looked at was a single line of text, with no line breaks or code formatting.</li>
+<li><strong>Sync schedule:</strong> the schedule can only be daily, weekly or monthly. Syncing more often means calling the sync API yourself.</li>
+<li><strong>Cost:</strong> about $1.4 a month for the same usage (calculated from the price list). That is more than this search (about $0.12 a month), but both are small.</li>
+</ul>
+<p>At this scale, the reason to build it yourself is not accuracy. It is the sync interval, the read-scoped token, the sources and warnings the agent gets, and being able to measure and fix each step.</p>
+<h3>Which step went wrong</h3>
+<p>Each step was measured on its own, and only the step with the problem was fixed.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What I found</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sync</td>
+<td>The default page list included archived pages. The sync now fetches current pages only.</td>
+</tr>
+<tr>
+<td>Safety checks</td>
+<td>An ordinary sentence was flagged as an instruction to an AI. The check now catches only text that addresses an AI directly.</td>
+</tr>
+<tr>
+<td>Chunking</td>
+<td>Without the title prefix, MRR dropped from 0.89 to 0.82.</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>For one question, search found the right page but not the section with the answer.</td>
+</tr>
+<tr>
+<td>Answer</td>
+<td>Most wrong answers were not made up. They said "not in the docs" when the answer was there, and one sentence added to the prompt raised the all-documents method from 68% to 82%.</td>
+</tr>
+<tr>
+<td>Answer</td>
+<td>For one question, search returned the right table, but the model still misread the log level of a 404. The error was in the answer step, not in search.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Managed Knowledge Base also returns its search results separately, so you can tell whether search or the answer was at fault. But the steps before that, conversion and chunking, could only be seen through the chunks that came out.</p>
+<h3>Cost</h3>
+<p>I multiplied the billed time measured in CloudWatch, and the request counts taken from the code, by AWS list prices for Sydney. The amounts are before free tiers.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Billed time (median)</th>
+<th>Cost per 1,000</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sync, nothing changed</td>
+<td>2.4 s</td>
+<td>$0.024</td>
+</tr>
+<tr>
+<td>Sync, one page changed</td>
+<td>3.9 s</td>
+<td>$0.13</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>0.12 s</td>
+<td>$0.004</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>A month (10-minute sync, 100 edits, 1,000 searches) comes to about $0.12. Most of it is syncs where nothing changed. At 10-minute intervals, the Lambda starts from scratch almost every time (a cold start).</li>
+<li>[Fill in from the real bill after a month]</li>
+</ul>
+<h3>Limits</h3>
+<ul>
+<li>These results come from 30 fictional pages and 31 questions that Claude wrote. Small differences between methods are within the margin of error.</li>
+<li>Search does not check each user's permissions. It assumes that only spaces everyone using the agent may see are synced.</li>
+<li>The safety checks reduce the risk but can't remove it. Testing with attack pages is the next step.</li>
+<li>There is no reranker.</li>
+<li>The comparison test and the warning test were each run once.</li>
+</ul>
+<h2 id="what-the-design-missed">What the design missed</h2>
+<ol>
+<li><strong>The measurement method decided the result.</strong> The first freshness measurement made the next edit as soon as the previous one showed up in search. But that moment is always right after a sync, so every edit waited out a full cycle, and only the worst case was measured (589–605 seconds). I changed the script to wait a random time before each edit and measured again.</li>
+<li><strong>Copies of deleted pages stayed behind.</strong> Deleted pages dropped out of search, but their raw pages and converted text stayed in S3. A secret posted by mistake and then deleted would have stayed on our side. Now the files of deleted pages and old versions get a tag, and a lifecycle rule deletes them. The sync function still has no permission to delete.</li>
+<li><strong>The warning was produced but not passed on.</strong> As described in "When the sync stops", the agent had to be told explicitly to pass the warning on.</li>
+</ol>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><strong>Connect pull request review:</strong> the earlier AI PR review project will use this search to find the team's decision records and rules as evidence.</li>
+<li><strong>Connect ticket drafting:</strong> when AI drafts a Jira ticket, it will use this search to find related documents and note in the ticket where the request conflicts with earlier decisions or procedures.</li>
+<li><strong>Test with attack pages:</strong> measure the safety checks with pages that contain hidden text and instructions aimed at an AI.</li>
+<li><strong>If several people use it:</strong> search that follows each user's permissions, and authentication, would be needed. Right now it is built for one person.</li>
+</ul>
+<h2 id="how-it-was-built">How it was built</h2>
+<p>The code, tests, CDK and evaluation scripts were written with an AI coding agent (Claude Code). Claude also wrote the sample documents and evaluation questions. I made the decisions: what to build, what permissions to grant, and what to measure and how.</p>
+<h2 id="code-and-records">Code and records</h2>
+<ul>
+<li>Code: <a href="https://github.com/jaeneungsim/ai-team-docs">https://github.com/jaeneungsim/ai-team-docs</a></li>
+<li>Sample documents (Markdown): <code>demo-docs/</code> in the repository</li>
+<li>Results: <code>evals/results/</code> in the repository (retrieval, answers, Managed Knowledge Base comparison, freshness, the runbook test, cost)</li>
+<li>Earlier project, AI-first pull request review: <a href="https://jaeneungsim.github.io/ai-pr-review/">https://jaeneungsim.github.io/ai-pr-review/</a></li>
+</ul></article>
+ <footer class="site"><a href="../">← All write-ups</a><a href="https://github.com/jaeneungsim/ai-team-docs">Code on GitHub</a></footer>
+</div>
+</body>
+</html>
