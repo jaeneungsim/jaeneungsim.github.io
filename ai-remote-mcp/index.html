@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One MCP server for the whole team · Jaeneung Sim</title>
+<meta name="description" content="The team docs search MCP server used to run on each developer&#x27;s computer. Now it runs once, as a remote server on AWS Lambda. Developers approve the repository&#x27;s .mcp.json once and sign in with their own account. A fix reaches everyone with one deploy, and a rollback only moves an alias.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="One MCP server for the whole team">
+<meta property="og:description" content="The team docs search MCP server used to run on each developer&#x27;s computer. Now it runs once, as a remote server on AWS Lambda. Developers approve the repository&#x27;s .mcp.json once and sign in with their own account. A fix reaches everyone with one deploy, and a rollback only moves an alias.">
+<meta property="og:url" content="https://jaeneungsim.github.io/ai-remote-mcp/">
+<meta property="og:image" content="https://jaeneungsim.github.io/ai-remote-mcp/architecture.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jaeneungsim.github.io/ai-remote-mcp/">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>*{box-sizing:border-box}body{margin:0}
+/* Layout: one reading column, like a GitHub Pages article; the diagram and tables get the full column width. */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --fg:#17202A; --muted:#5A6776; --line:#DCE2E9; --soft:#EEF1F5;
+  --accent:#2457D6; --note:#8A5A00; --note-bg:#FFF7E3;
+  --f-display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --f-body:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141A; --surface:#161D25; --fg:#E5EBF1; --muted:#9AA8B6; --line:#2A3542; --soft:#1C2530;
+  --accent:#7EA2FF; --note:#F0C060; --note-bg:#2A2312; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F141A; --surface:#161D25; --fg:#E5EBF1; --muted:#9AA8B6; --line:#2A3542; --soft:#1C2530;
+  --accent:#7EA2FF; --note:#F0C060; --note-bg:#2A2312; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body)}
+.page{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:32px 64px;display:flex;flex-direction:column;gap:28px}
+.top{display:flex;flex-direction:column;gap:12px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font:600 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.status{font:600 12px/1 var(--f-display);letter-spacing:0;text-transform:none;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--fg);background:var(--surface)}
+h1{margin:0;font:700 clamp(28px,5vw,40px)/1.2 var(--f-display);letter-spacing:-0.025em;text-wrap:balance}
+.lede{margin:0;font-size:18px;line-height:1.75;color:var(--fg);max-width:65ch;word-break:keep-all}
+.stack{display:flex;flex-wrap:wrap;gap:8px}
+.stack span{font:500 12.5px/1 var(--f-mono);padding:7px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px 16px;padding-block:12px;border-block:1px solid var(--line);font:500 14px/1.6 var(--f-display)}
+nav.toc a{color:var(--muted);text-decoration:none}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--accent);outline:none;text-decoration:underline}
+article{display:flex;flex-direction:column;gap:14px;font-size:16px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere}
+article h2{margin:28px 0 0;font:700 24px/1.3 var(--f-display);letter-spacing:-0.015em;scroll-margin-top:16px;text-wrap:balance}
+article h3{margin:14px 0 0;font:700 18px/1.4 var(--f-display);text-wrap:balance}
+article p,article ul,article ol{margin:0;max-width:68ch}
+article ul,article ol{padding-left:22px;display:flex;flex-direction:column;gap:6px}
+article li > ul{margin-top:6px}
+article strong{font-weight:700}
+article a{color:var(--accent);text-underline-offset:3px}
+article code{font:500 .88em/1.4 var(--f-mono);background:var(--soft);padding:1px 5px;border-radius:5px}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.table table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px;line-height:1.6}
+.table th{font:600 13px/1.4 var(--f-display);text-align:left;color:var(--muted);background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--line)}
+.table td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+.table tr:first-child td{border-top:none}
+figure.diagram{margin:6px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+figure.diagram figcaption{padding:10px 14px;font-size:13.5px;color:var(--muted);background:var(--surface);border-top:1px solid var(--line)}
+.notes{background:var(--note-bg);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.notes h2{margin:0;font:700 15px/1.4 var(--f-display);color:var(--note)}
+.notes ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.65}
+
+article{word-break:normal;overflow-wrap:break-word}
+.lede{word-break:normal}
+footer.site{display:flex;flex-wrap:wrap;gap:8px 18px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer.site a{color:var(--accent)}
+
+.dg{container-type:inline-size;position:relative;width:100%;aspect-ratio:100/103.5;overflow:hidden;
+  background:#FBFBFC;color:#14212E;
+  font-family:'IBM Plex Sans KR','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  letter-spacing:-0.01em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.dg *{box-sizing:border-box;margin:0}
+.dg .a{position:absolute}
+.dg-title{left:6cqw;top:4.4cqw;font-weight:700;font-size:4.7cqw;line-height:1.15;letter-spacing:-0.025em;white-space:nowrap}
+.dg-sub{left:6cqw;top:10.7cqw;font-size:2.25cqw;line-height:1.35;color:#3A4A5B;white-space:nowrap}
+.dg-sub b{color:#14212E;font-weight:700}
+.dg-zone{border-radius:2cqw;border:0.2cqw solid}
+.dg-zone.gh{background:#EAF0F7;border-color:#D3DCE7}
+.dg-zone.aws{background:#F6F2EB;border-color:#E3DBCF}
+.dg-zl{font-size:1.95cqw;font-weight:700;color:#4F5D6D;white-space:nowrap}
+.dg-bx{background:#FFFFFF;border:0.2cqw solid #C9D2DD;border-radius:1.3cqw;padding:1.1cqw 1.3cqw;
+  display:flex;flex-direction:column;gap:0.45cqw;overflow:hidden}
+.dg-bx.ai{background:#EEF3FF;border-color:#9DB6F0}
+.dg-bx.zone-in{background:#FFFFFF}
+.dg-bx.pv{background:#F7F9FC;border:0.22cqw dashed #6B7A8C}
+.dg-bt{display:flex;align-items:center;gap:0.9cqw;font-weight:700;font-size:2.3cqw;line-height:1.2;white-space:nowrap}
+.dg-bt.sm{font-size:2.1cqw}
+.dg-bl{font-size:1.95cqw;line-height:1.3;color:#3A4A5B;white-space:nowrap}
+.dg-bl.ok{color:#1A7F37;font-weight:700}
+.dg-bl .fix{color:#C2410C;font-weight:700}.dg-bl .human{color:#8A5A00;font-weight:700}
+.dg-n{flex:none;width:3cqw;height:3cqw;border-radius:50%;background:#14212E;color:#FFFFFF;display:grid;place-items:center;
+  font-weight:700;font-size:1.75cqw;line-height:1}
+.dg-n.ai{background:#2457D6}
+.dg-panel{background:#FFFFFFAA;border:0.2cqw solid #E3DBCF;border-radius:1.6cqw}
+.dg-pl{font-size:1.8cqw;font-weight:700;color:#6A5B45;white-space:nowrap}
+.dg-sf{background:#FFFFFF;border:0.22cqw solid #9AA8B8;border-radius:1.6cqw}
+.dg-chip{display:flex;align-items:center;gap:1cqw;background:#F3F5F8;border:0.18cqw solid #DCE2EA;border-radius:1cqw;
+  padding:0 1cqw;white-space:nowrap}
+.dg-chip.ai{background:#EEF3FF;border-color:#9DB6F0}
+.dg-chip i{font-style:normal;flex:none;width:2.6cqw;height:2.6cqw;border-radius:50%;background:#FFFFFF;border:0.18cqw solid #9AA8B8;
+  display:grid;place-items:center;font:600 1.45cqw/1 'IBM Plex Mono',ui-monospace,monospace;color:#3A4A5B}
+.dg-chip.ai i{border-color:#2457D6;color:#2457D6}
+.dg-chip b{font-size:2.05cqw;font-weight:700}
+.dg-chip span{font-size:1.8cqw;color:#4F5D6D}
+.dg-chip .mono{font:500 1.75cqw/1 'IBM Plex Mono',ui-monospace,monospace}
+.dg-el{font-size:1.85cqw;font-weight:600;color:#4F5D6D;white-space:nowrap}
+.dg-el.ai{color:#2457D6}
+.dg-foot{left:6cqw;top:114.6cqw;display:flex;flex-direction:column;gap:0.5cqw}
+.dg-foot p{font-size:2.05cqw;line-height:1.35;color:#2C3B4B;white-space:nowrap}
+.dg-foot b{color:#14212E}
+.dg-foot .src{font:500 1.8cqw/1.3 'IBM Plex Mono',ui-monospace,monospace;color:#5A6A7B}
+.dg svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1}
+.dg .dg-el{z-index:2}
+.dg .ln{fill:none;stroke:#6B7A8C;stroke-width:0.32}
+.dg .ln.dash{stroke-dasharray:1 0.8}
+.dg .ln.ai{stroke:#2457D6}
+.dg .hd{fill:#6B7A8C}.dg .hd.ai{fill:#2457D6}
+
+.dg.s4{aspect-ratio:100/105}
+.dg.en{font-family:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;letter-spacing:0}
+.dg-zone.ext{background:#EAF0F7;border-color:#D3DCE7}
+.dg-step{background:#F3F5F8;border:0.18cqw solid #DCE2EA;border-radius:1cqw;padding:0.9cqw 1.1cqw;
+  display:flex;flex-direction:column;gap:0.4cqw;overflow:hidden}
+.dg-step.row{flex-direction:row;align-items:center;gap:1.4cqw}
+.dg-step b{display:flex;align-items:center;gap:0.9cqw;font-size:2.05cqw;font-weight:700;line-height:1.2;white-space:nowrap}
+.dg-step>span{font-size:1.8cqw;line-height:1.3;color:#4F5D6D;white-space:nowrap}
+.dg-bl.warn{color:#C2410C;font-weight:700}
+.dg.s4en{aspect-ratio:100/107}</style>
+</head>
+<body>
+<div class="page">
+ <header class="top">
+  <div class="eyebrow"><span>Write-up · October 2026</span></div>
+  <h1>One MCP server for the whole team</h1>
+  <p class="lede">The team docs search MCP server used to run on each developer&#x27;s computer. Now it runs once, as a remote server on AWS Lambda. Developers approve the repository&#x27;s .mcp.json once and sign in with their own account. A fix reaches everyone with one deploy, and a rollback only moves an alias.</p>
+  <div class="stack"><span>AWS Lambda</span><span>Lambda Web Adapter</span><span>Amazon Cognito</span><span>MCP Python SDK 2.3</span><span>CDK</span><span>GitHub Actions</span><span>Claude Code</span></div>
+ </header>
+ <nav class="toc" aria-label="Contents"><a href="#the-problem">The problem</a><a href="#principles">Principles</a><a href="#architecture">Architecture</a><a href="#why-this-design">Why this design</a><a href="#results">Results</a><a href="#limits">Limits</a><a href="#what-the-design-missed">What the design missed</a><a href="#next-steps">Next steps</a><a href="#how-it-was-built">How it was built</a><a href="#code-and-records">Code and records</a></nav>
+ <article><h2 id="the-problem">The problem</h2>
+<p>AI agents reach company systems such as internal docs, tickets and databases through MCP servers. The team docs search from my previous project was a local MCP server that ran on each developer's computer. That is the easiest way to start when one person uses it. Once a team shares it, it gets harder to manage.</p>
+<ul>
+<li><strong>Everyone updates on their own.</strong> A fix has to be installed on every computer, so people easily end up on different versions. It is also hard to see in one place who is on which version.</li>
+<li><strong>Credentials sit on developers' computers.</strong> A local server that calls a company system needs credentials on each computer. The previous project narrowed them to an AWS role that can only call the search, but everyone still needed AWS settings and a sign-in.</li>
+<li><strong>Usage records are scattered.</strong> To see who uses which tool, you have to collect records from each computer.</li>
+</ul>
+<p>The MCP documentation (Local Server Security) recommends the remote version of a server when there is one. A remote server runs no code on the developer's computer, uses the spec's sign-in flow instead of tokens in local config files, and is fixed in one place. For organizations, it recommends central distribution, an inventory of who uses what at which version, and audit logs. GitHub (September 2025), Atlassian (February 2026) and AWS (May 2026) also offer the MCP servers for their own services as remote servers, generally available.</p>
+<p>So I moved the team docs search to a remote MCP server. The search itself is the one from the previous project; a remote server now sits in front of it. Because both use the same search, the local and the remote server can be compared under the same conditions.</p>
+<h2 id="principles">Principles</h2>
+<ol>
+<li><strong>One server.</strong> A fix reaches everyone with one deploy, and a rollback happens in one place too.</li>
+<li><strong>Follow the spec.</strong> Sign-in follows the MCP authorization spec (OAuth), and the client is Claude Code as it is. There is no custom sign-in method and no extension.</li>
+<li><strong>Check that each token was issued for this server.</strong> The signature, expiry, issuing app, audience (<code>aud</code>) and scope are all checked. A token is never passed on to anything else.</li>
+<li><strong>Keep company credentials on the server side.</strong> A developer's computer holds only the token for this server.</li>
+<li><strong>Log in one place, and only what is needed.</strong> Who called which tool, when, on which version. Never tokens or question text.</li>
+<li><strong>No cost while idle.</strong> Nothing with a fixed monthly cost.</li>
+</ol>
+<h2 id="architecture">Architecture</h2>
+<figure class="diagram"><div class="dg s4 s4en en" role="img" aria-label="Remote MCP server architecture: Claude Code on the developer&#x27;s computer signs in once in the browser through Amazon Cognito and gets a token that names this server. For each tool call it sends HTTPS with the token to the Lambda function URL on the live alias. The remote MCP server Lambda checks the token, calls the search Lambda from the previous project with its own role, and writes one log line per call to CloudWatch Logs. GitHub Actions publishes a new Lambda version on every push to main and moves the live alias to it; a rollback moves only the alias back"><div class="a dg-zone ext" style="left:3.5cqw;top:3.5cqw;width:93cqw;height:18cqw"></div><p class="a dg-zl" style="left:5.5cqw;top:4.7cqw">Developer's computer</p><div class="a dg-bx " style="left:6cqw;top:7.5cqw;width:42cqw;height:10.5cqw"><p class="dg-bt">Claude Code</p><p class="dg-bl">Connects through the repo's .mcp.json</p><p class="dg-bl">Sign-in token kept in the keychain</p></div><div class="a dg-zone aws" style="left:3.5cqw;top:25.5cqw;width:93cqw;height:57cqw"></div><p class="a dg-zl" style="left:5.5cqw;top:79.4cqw">AWS · serverless · CDK</p><div class="a dg-bx " style="left:54cqw;top:29cqw;width:40cqw;height:10.5cqw"><p class="dg-bt"><span class="dg-n">1</span>Amazon Cognito</p><p class="dg-bl">Managed login · pre-registered client</p><p class="dg-bl">Token aud = this server's URL</p></div><p class="a dg-el" style="left:52cqw;top:9.3cqw">Browser sign-in, once</p><p class="a dg-el" style="left:21.6cqw;top:32.6cqw">HTTPS + token</p><p class="a dg-el" style="left:21.6cqw;top:35.4cqw">Function URL · live alias</p><div class="a dg-sf" style="left:6cqw;top:44cqw;width:88cqw;height:18cqw"></div><p class="a dg-bt" style="left:7.6cqw;top:45.1cqw">Remote MCP server Lambda</p><div class="a dg-step" style="left:7cqw;top:49cqw;width:42cqw;height:11cqw"><b><span class="dg-n">2</span>Token checks · search</b><span>Signature · expiry · aud · scope</span><span>Searches with the server's own role</span></div><div class="a dg-step" style="left:51cqw;top:49cqw;width:42cqw;height:11cqw"><b><span class="dg-n">3</span>Logs</b><span>Who · which tool · which version</span><span>No tokens, no question text</span></div><div class="a dg-bx " style="left:6cqw;top:67.5cqw;width:42cqw;height:10.5cqw"><p class="dg-bt">Search Lambda (previous project)</p><p class="dg-bl">Hybrid search · sources and versions</p><p class="dg-bl">S3 index · Bedrock embeddings</p></div><div class="a dg-bx " style="left:52cqw;top:67.5cqw;width:42cqw;height:10.5cqw"><p class="dg-bt">CloudWatch Logs</p><p class="dg-bl">One JSON line per call</p><p class="dg-bl">Per-user totals in Logs Insights</p></div><div class="a dg-zone ext" style="left:3.5cqw;top:86.5cqw;width:93cqw;height:17.0cqw"></div><p class="a dg-zl" style="left:5.5cqw;top:87.7cqw">GitHub</p><div class="a dg-bx " style="left:6cqw;top:90.6cqw;width:88cqw;height:10.6cqw"><p class="dg-bt"><span class="dg-n">4</span>GitHub Actions</p><p class="dg-bl">Push to main → tests → new Lambda version → live alias moves to it</p><p class="dg-bl">Rollback moves only the alias back to an earlier version</p></div><p class="a dg-el" style="left:51.8cqw;top:83.25cqw">Deploy · rollback</p><svg viewBox="0 0 100 107" preserveAspectRatio="none" aria-hidden="true"><path class="ln " d="M49.6 12 H74 V27.4"/><polygon class="hd " points="73.0,27.4 75.0,27.4 74,29"/><polygon class="hd " points="49.6,11.0 49.6,13.0 48,12"/><path class="ln " d="M20 19.6 V42.4"/><polygon class="hd " points="19.0,42.4 21.0,42.4 20,44"/><polygon class="hd " points="19.0,19.6 21.0,19.6 20,18"/><path class="ln " d="M27 61.6 V65.9"/><polygon class="hd " points="26.0,65.9 28.0,65.9 27,67.5"/><polygon class="hd " points="26.0,61.6 28.0,61.6 27,60"/><path class="ln " d="M72 60 V65.9"/><polygon class="hd " points="71.0,65.9 73.0,65.9 72,67.5"/><path class="ln " d="M50 90.6 V63.6"/><polygon class="hd " points="49.0,63.6 51.0,63.6 50,62"/></svg></div><figcaption>Architecture. The numbers match the sections below. Arrows are requests; two-headed arrows are calls that come back with an answer.</figcaption></figure>
+<h3>1. Sign-in</h3>
+<ul>
+<li>When a developer opens Claude Code in the repository for the first time, Claude Code asks once whether to use the <code>team-docs-remote</code> server from the repository's <code>.mcp.json</code>.</li>
+<li>The first tool call gets a 401 from the server. Claude Code reads the server's protected resource metadata (RFC 9728) to find the authorization server, Amazon Cognito, and opens the sign-in page in the browser. It sends PKCE and <code>resource</code> (the server URL) with the request.</li>
+<li>Cognito has no endpoint for automatic client registration. So a public client for Claude Code (no secret) is registered in advance, and its client ID and callback port go in <code>.mcp.json</code>. The MCP spec accepts pre-registration as a standard way to get a client ID. Cognito matches callback URLs exactly and takes no port ranges, so the port is fixed.</li>
+<li>Since October 2025, Cognito uses a <code>resource</code> parameter to set the access token's audience (<code>aud</code>), on the Essentials tier and above, with managed login only. So the token names this server's URL.</li>
+<li>Access tokens last an hour and refresh tokens 30 days, with refresh token rotation on. The MCP spec requires refresh token rotation for public clients.</li>
+<li>Self sign-up is off. An administrator creates users.</li>
+</ul>
+<h3>2. Token checks and search</h3>
+<ul>
+<li>The server runs on AWS Lambda with the MCP Python SDK 2.3. AWS Lambda Web Adapter starts the app once per execution environment and hands it the requests that arrive at the function URL.</li>
+<li>Every request's token is checked: the signature against Cognito's public keys, then the issuer, the expiry, that it is an access token, that our app client received it, that <code>aud</code> is this server's URL, and that it has the <code>search</code> scope. If anything doesn't match, the answer is 401 or 403.</li>
+<li>After the check, the server calls the previous project's search Lambda with its own IAM role. That role can only call the search function and read the server's settings. The user's token is not passed on.</li>
+<li>The tool name, description and result text are exactly the same as the local server's. Each result carries the page link, version and last-edited time, and a warning goes at the top when the sync has stopped.</li>
+<li>There are no sessions. The 2026-07-28 spec removed them, and requests from older clients are also served without one. So any execution environment can take any request.</li>
+<li>Three things are blocked for Lambda's sake. The change-notification stream is turned off, GET and DELETE get a 405 before they reach the SDK, and every response is a single JSON body. An open stream keeps its request from ever finishing; left alone, it keeps the function running, and billing, until it times out.</li>
+</ul>
+<h3>3. Logs</h3>
+<ul>
+<li>Every tool call and every refused request writes one JSON line to CloudWatch Logs: the user (Cognito <code>sub</code>), the client and its protocol version, the tool, the question's length, the number of results and warnings, the time taken (in total and for the search), and the server version (git commit and Lambda version). A refused request also gets the reason.</li>
+<li>Tokens, emails and question text are never logged.</li>
+<li>One Logs Insights query shows calls and average time per user, tool and server version.</li>
+</ul>
+<h3>4. Deploy and rollback</h3>
+<ul>
+<li>The function URL is attached to the Lambda's <code>live</code> alias, so the URL never changes.</li>
+<li>A push to main makes GitHub Actions run the tests and deploy with CDK. A new Lambda version is published and the <code>live</code> alias moves to it. After the deploy, a check from outside confirms what can be seen without a token: the 401, the metadata, and the 405 for GET.</li>
+<li>A rollback is a workflow run by hand with a version number. It moves only the alias to that version and runs the same check.</li>
+<li>Both workflows use AWS roles assumed through GitHub OIDC. The deploy role may only assume the CDK bootstrap roles; the rollback role may only read and move the alias. Both trust only the main branch of this repository, matched by GitHub's numeric repository ID, so a repository re-created under the same name cannot use them.</li>
+<li>The server version is the last commit that changed the server code, the infrastructure or the dependencies. A commit that only changes docs does not publish a new version.</li>
+</ul>
+<h2 id="why-this-design">Why this design</h2>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Not chosen</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One remote server</td>
+<td>Distributing a local package (publish versions to an internal registry, announce new versions, open update PRs in each repository)</td>
+<td>This was my first idea. Versions can be kept in step, but code still runs on every computer, credentials are still needed there, and records stay scattered. For a tool that reaches company systems, remote fits better. For a tool that has to work with the developer's computer, this approach still makes sense</td>
+</tr>
+<tr>
+<td>Lambda function URL, with the server code checking tokens</td>
+<td>Amazon API Gateway HTTP API with a JWT authorizer</td>
+<td>Its 401 cannot carry the metadata URL, and the response cannot be changed</td>
+</tr>
+<tr>
+<td>〃</td>
+<td>Amazon API Gateway REST API</td>
+<td>It can change the 401, but costs $3.50 per million requests. Its default URL starts with a stage path, so serving the well-known URLs the spec defines needs a custom domain</td>
+</tr>
+<tr>
+<td>〃</td>
+<td>Amazon Bedrock AgentCore Gateway</td>
+<td>It provides the 401 and the metadata itself, but tool names become <code>target___tool</code>, so the tool would no longer match the local server's for comparison. Using the user's identity needs an interceptor</td>
+</tr>
+<tr>
+<td>〃</td>
+<td>Function URL with IAM auth</td>
+<td>IAM auth takes the <code>Authorization</code> header for the AWS signature, so an OAuth token cannot be sent</td>
+</tr>
+<tr>
+<td>Lambda Web Adapter</td>
+<td>Mangum</td>
+<td>The MCP SDK has no official Lambda guide. There are reports of Mangum failing on warm invocations. Web Adapter is maintained by AWS and starts the app once per execution environment</td>
+</tr>
+<tr>
+<td>Cognito Essentials, managed login</td>
+<td>The Lite tier, the classic hosted UI</td>
+<td>Putting the server URL in <code>aud</code> and rotating refresh tokens both need Essentials or above, and <code>aud</code> needs managed login. Up to 10,000 monthly active users are free</td>
+</tr>
+<tr>
+<td>Pre-registered public client</td>
+<td>Automatic client registration</td>
+<td>Cognito has no registration endpoint. The MCP spec accepts pre-registration</td>
+</tr>
+<tr>
+<td>No SnapStart</td>
+<td>SnapStart</td>
+<td>It costs about $1.95 a month for every version, continuously. Cold starts were measured instead</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="results">Results</h2>
+<p>Measured on 26 October 2026 from a laptop in Sydney to the Sydney Region (ap-southeast-2). One user and one computer: these numbers show how each part behaves, not how a team would load it.</p>
+<h3>Sign-in</h3>
+<ul>
+<li>Claude Code (2.1.310) signed in and called the tool. It went through Cognito's managed login with the pre-registered client and the fixed callback port.</li>
+<li>The token passed the <code>aud</code> check: Claude Code sent <code>resource</code>, and Cognito put the server URL into <code>aud</code>.</li>
+<li>Cognito's discovery document has no PKCE entry (<code>code_challenge_methods_supported</code>), yet sign-in worked with no extra setting. The official MCP TypeScript SDK assumes S256 when that entry is missing.</li>
+<li>The protocol version negotiated was 2026-07-28.</li>
+<li>After Claude Code was closed and opened again, it did not ask to sign in again.</li>
+</ul>
+<h3>Response time</h3>
+<p>The same ten questions (questions 1 to 10 from the previous project's evaluation set) went to both servers, each after one warm-up call. Both servers call the same search Lambda.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Server</th>
+<th>Median</th>
+<th>Slowest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local (stdio server on the laptop)</td>
+<td>143.5 ms</td>
+<td>159 ms</td>
+</tr>
+<tr>
+<td>Remote (function URL)</td>
+<td>170.5 ms</td>
+<td>201 ms</td>
+</tr>
+</tbody>
+</table></div>
+<p>The remote server's log shows that 130 ms of a 132 ms call was spent waiting for the search. Most of the difference is the extra network hop from the laptop to the remote server.</p>
+<h3>Cold starts</h3>
+<p>A new execution environment took 2.1 to 2.7 seconds to start (five Init Durations: 2,134, 2,679, 2,103, 2,600 and 2,712 ms). The first call to a newly deployed version took 3.1 seconds at the client.</p>
+<h3>Deploy and rollback</h3>
+<p>While GitHub Actions ran one deploy and two alias moves, the server version was asked every second: 272 answers, no errors.</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Event</th>
+<th>From the start</th>
+<th>First answer after the alias moved</th>
+<th>Answers from the old version afterwards</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deploy a new version (push to main)</td>
+<td>About 90 s from the push (tests 35 s)</td>
+<td>0.7 s</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Roll back (version 4 → 3)</td>
+<td>13 s from the workflow start</td>
+<td>1.1 s</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Roll forward (version 3 → 4)</td>
+<td>11 s from the workflow start</td>
+<td>1.2 s</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>"After the alias moved" means after CloudFormation finished updating the alias (deploy), or after the workflow moved the alias (rollback). The new version then answered 30 times in a row.</li>
+<li>The new version answered before the deploy workflow logged that the deploy was done. The alias moves before CloudFormation finishes its cleanup.</li>
+</ul>
+<h3>Logs</h3>
+<p>One Logs Insights query showed calls and average time per user, tool and server version. For example, one user called <code>search_team_docs</code> 11 times on server version <code>c912093</code>.</p>
+<h3>Cost</h3>
+<p>Calculated with Sydney prices from the AWS Price List (as of 22 October 2026: $0.20 per million requests, $0.0000133334 per GB-second on arm64), before the free tier.</p>
+<ul>
+<li>The whole measurement session: 298 Lambda invocations, 3.98 GB-seconds, $0.0001.</li>
+<li>A warm tool call bills about 135 ms at 512 MB, mostly waiting for the search. 1,000 calls cost about $0.0011.</li>
+<li>Each call writes about 0.6 KB of logs, under $0.001 per 1,000 calls.</li>
+<li>The search Lambda's cost is the same with the local server, so it is not counted. The function URL itself has no extra charge.</li>
+</ul>
+<h2 id="limits">Limits</h2>
+<ul>
+<li>Measured with one user on one computer. The deploy and the rollback were measured once each.</li>
+<li>No rate limit. Requests without a token still start the function. This account's Lambda concurrency limit (10) acts as a cap, but a burst of requests could also hold back other functions in the same account.</li>
+<li>The search does not know about permissions. Everyone who signs in sees the same documents, the same assumption as the previous project.</li>
+<li>One user, created by hand. A company would connect its own identity provider to Cognito, or use it directly. Microsoft Entra ID doesn't support automatic client registration either, so the same pre-registration applies.</li>
+<li>Cold starts take over 2 seconds. With regular use a warm environment answers, but the first call after a long idle period waits.</li>
+</ul>
+<h2 id="what-the-design-missed">What the design missed</h2>
+<ol>
+<li><strong>The function URL renames the 401 header.</strong> The server's 401 carries a <code>WWW-Authenticate</code> header with the metadata URL and the scope. The Lambda function URL sends that header as <code>x-amzn-Remapped-www-authenticate</code>. The Lambda documentation doesn't mention it; AWS re:Post and the Serverless forum have reports of the same thing. The MCP spec asks the server for either the 401 header or the well-known URL, and asks clients to support both. Because the metadata was also at the well-known URL, sign-in still worked, and the scope was fixed in <code>.mcp.json</code>. The post-deploy check now reads the renamed header.</li>
+<li><strong>With the local server still registered, the agent picks either one.</strong> I kept the local server for the comparison, so two tools had the same name. The same question was answered once by the remote server and once by the local one (confirmed in the remote server's log and the search Lambda's log). When moving from local to remote, remove the local registration.</li>
+<li><strong>A Cognito resource server name cannot be a URL.</strong> To tie the token's scope and audience to this server, the resource server's identifier is the server URL. CDK uses the identifier as the name unless one is given, and names cannot contain <code>:</code> or <code>/</code>, so the first deploy failed. The name is now set separately, and a test checks the rule.</li>
+</ol>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><strong>Repository rules:</strong> Rule files such as AGENTS.md are read by the agent from the repository, so they cannot move to a remote server. Keeping rules consistent across repositories is the next post.</li>
+<li><strong>Rate limits and cost tracking:</strong> add per-user rate limits and usage records.</li>
+<li><strong>Company identity provider and permission-aware search:</strong> sign in with a company account, and search only the documents each person may see.</li>
+<li><strong>Agent check before deploy:</strong> start a new version on a different alias first, have an agent use the tool on a fixed set of questions, and move <code>live</code> only if it passes. A change to a remote server reaches everyone at once.</li>
+</ul>
+<h2 id="how-it-was-built">How it was built</h2>
+<p>The code, tests, CDK, workflows and measurement scripts were written with an AI coding agent (Claude Code). I made the decisions: going remote, the sign-in method, and what to measure and how.</p>
+<h2 id="code-and-records">Code and records</h2>
+<ul>
+<li>Code: <a href="https://github.com/jaeneungsim/ai-remote-mcp">https://github.com/jaeneungsim/ai-remote-mcp</a></li>
+<li>Measurements: <code>results/</code> in the repository (response times, deploy and rollback, cost)</li>
+<li>Previous project, team docs search: <a href="https://jaeneungsim.github.io/ai-team-docs/">https://jaeneungsim.github.io/ai-team-docs/</a></li>
+<li>Previous project, AI-first PR review: <a href="https://jaeneungsim.github.io/ai-pr-review/">https://jaeneungsim.github.io/ai-pr-review/</a></li>
+</ul></article>
+ <footer class="site"><a href="../">← All write-ups</a><a href="https://github.com/jaeneungsim/ai-remote-mcp">Code on GitHub</a></footer>
+</div>
+</body>
+</html>

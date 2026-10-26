@@ -31,6 +31,7 @@ footer a{color:var(--accent)}
  </header>
  <p class="intro">Write-ups on building software with AI agents: the problem, how it was built, and what was measured.</p>
  <ul>
+  <li><a href="ai-remote-mcp/"><span class="t">One MCP server for the whole team</span><span class="d">The team docs search moved from a local MCP server on each computer to one remote server on AWS Lambda, with Cognito sign-in, one log for every call, and deploys and rollbacks that move an alias. Measured response time, rollout, rollback and cost included.</span><span class="m">Oct 2026 · AWS Lambda · Amazon Cognito · MCP</span></a></li>
   <li><a href="ai-team-docs/"><span class="t">Up-to-date team docs for AI agents</span><span class="d">A Confluence space synced read-only into hybrid search that AI coding agents use through one MCP tool, with the source, version and a warning when the sync stops. Measured freshness, accuracy and cost included.</span><span class="m">Oct 2026 · AWS serverless · Amazon Bedrock · MCP</span></a></li>
   <li><a href="ai-pr-review/"><span class="t">AI-first pull request review</span><span class="d">Code and AI review every pull request first; verified changes merge on their own and people see only what needs them. Measured time and cost included.</span><span class="m">Oct 2026 · AWS serverless · Amazon Bedrock</span></a></li>
  </ul>
