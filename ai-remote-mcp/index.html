@@ -253,6 +253,7 @@ footer.site a{color:var(--accent)}
 <li>Cognito's discovery document has no PKCE entry (<code>code_challenge_methods_supported</code>), yet sign-in worked with no extra setting. The official MCP TypeScript SDK assumes S256 when that entry is missing.</li>
 <li>The protocol version negotiated was 2026-07-28.</li>
 <li>After Claude Code was closed and opened again, it did not ask to sign in again.</li>
+<li>An hour later, after the first access token had expired, Claude Code got a new one and called the tool without asking to sign in (refresh token rotation on).</li>
 </ul>
 <h3>Response time</h3>
 <p>The same ten questions (questions 1 to 10 from the previous project's evaluation set) went to both servers, each after one warm-up call. Both servers call the same search Lambda.</p>
